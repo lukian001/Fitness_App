@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1011760816927",
+    "project_id": "fitness-app-dinu",
+    "storage_bucket": "fitness-app-dinu.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1011760816927:android:8caa8387627f408fd4862a",
+        "android_client_info": {
+          "package_name": "com.licenta.fitnessapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1011760816927-e741ko4pnjem9ng6ofa6u1s0f01s1v6a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC40fKA8Uv6RgkijLtQ5Z3__D83mr5JQKQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1011760816927-e741ko4pnjem9ng6ofa6u1s0f01s1v6a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
