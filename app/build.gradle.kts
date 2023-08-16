@@ -49,6 +49,7 @@ android {
 }
 
 dependencies {
+    implementation ("com.github.Breens-Mbaka:Searchable-Dropdown-Menu-Jetpack-Compose:0.2.8")
     implementation(libs.kotlinx.datetime)
     implementation(libs.kalendar)
     implementation(libs.core.ktx)
@@ -63,6 +64,7 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.places)
     implementation(libs.material)
+    implementation("com.google.firebase:firebase-firestore-ktx:24.7.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)

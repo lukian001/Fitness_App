@@ -16,6 +16,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Send
@@ -39,10 +41,14 @@ import com.licenta.fitnessapp.data.Composables
 
 abstract class Menu {
     protected lateinit var composable: MutableState<Int>
+    protected lateinit var dialogOpened: MutableState<Boolean>
 
     @Composable
     fun Ui(composable: MutableState<Int>) {
         this.composable = composable
+        this.dialogOpened = remember {
+            mutableStateOf(false)
+        }
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -56,7 +62,7 @@ abstract class Menu {
                 Modifier
                     .align(Alignment.BottomEnd)
                     .padding(end = 5.dp, bottom = 45.dp),
-                extended
+                extended && !dialogOpened.value
             )
 
             ExtendedFloatingActionButton(
@@ -67,16 +73,32 @@ abstract class Menu {
                     Text(text = "Close Menu", color = Color.White)
                 },
                 icon = {
-                    Icon(
-                        imageVector = Icons.Rounded.KeyboardArrowUp,
-                        contentDescription = "Close Menu",
-                        tint = Color.White,
-                    )
+                    if (dialogOpened.value) {
+                        Icon(
+                            imageVector = Icons.Rounded.Clear,
+                            contentDescription = "Close Menu",
+                            tint = Color.White,
+                        )
+                    } else {
+                        if (extended) {
+                            Icon(
+                                imageVector = Icons.Rounded.KeyboardArrowDown,
+                                contentDescription = "Close Menu",
+                                tint = Color.White,
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Rounded.KeyboardArrowUp,
+                                contentDescription = "Close Menu",
+                                tint = Color.White,
+                            )
+                        }
+                    }
                 },
                 onClick = {
                     extended = !extended
                 },
-                expanded = extended,
+                expanded = extended && !dialogOpened.value,
                 containerColor = MaterialTheme.colorScheme.secondary
             )
         }

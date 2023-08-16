@@ -8,6 +8,7 @@ enum class Food (
     val carbohydrates: Float,
     val fibers: Float
 ) {
+    PLEASESELECTFOOD("Please select food", 0f, 0f, 0f, 0f, 0f),
     WATER("Water", 0f, 0f, 0f, 0f, 0f),
     SHAORMA("Shaorma", 238f, 8.2f, 14.4f, 18.9f, 1.7f),
     PIZZA("Pizza", 305f, 27.5f, 4.6f, 63.7f, 55.7f),
