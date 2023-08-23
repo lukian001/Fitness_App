@@ -27,9 +27,7 @@ import com.himanshoe.kalendar.ui.component.day.KalendarDayKonfig
 import com.himanshoe.kalendar.ui.firey.DaySelectionMode
 import com.licenta.fitnessapp.data.Food
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.todayIn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -46,6 +44,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -53,7 +52,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.licenta.fitnessapp.data.Entry
+import com.licenta.fitnessapp.logic.Cache
 import com.licenta.fitnessapp.logic.ServerLogic
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toKotlinLocalDateTime
+import kotlinx.datetime.toLocalDateTime
 import java.time.LocalDateTime
 
 object EntriesMenu: Menu() {
@@ -61,7 +65,10 @@ object EntriesMenu: Menu() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun CustomUi() {
-        val today: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
+        val todayTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toJavaLocalDateTime()
+
+        ServerLogic.getEntriesForDate(todayTime.toLocalDate().atStartOfDay())
+
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -69,14 +76,18 @@ object EntriesMenu: Menu() {
                 modifier = Modifier.fillMaxSize()
             ) {
                 Kalendar(
-                    currentDay = today,
+                    currentDay = todayTime.toKotlinLocalDateTime().date,
                     kalendarType = KalendarType.Oceanic,
                     events = KalendarEvents(),
                     kalendarColors = KalendarColors.default(),
                     kalendarDayKonfig = KalendarDayKonfig.default(),
                     daySelectionMode = DaySelectionMode.Single,
                     onDayClick = { selectedDay, events ->
-                        // Handle day click event
+                        ServerLogic.getEntriesForDate(
+                            selectedDay.atStartOfDayIn(TimeZone.currentSystemDefault())
+                                .toLocalDateTime(TimeZone.currentSystemDefault())
+                                .toJavaLocalDateTime()
+                        )
                     }
                 )
                 LazyColumn (
@@ -85,7 +96,7 @@ object EntriesMenu: Menu() {
                     item {
                         Spacer(modifier = Modifier.height(10.dp))
                     }
-                    items(Food.values()) {
+                    items(Cache.entries) {
                             item -> ItemCard(item)
                     }
                 }
@@ -184,6 +195,7 @@ object EntriesMenu: Menu() {
                                     modifier = Modifier.fillMaxWidth(),
                                     onClick = {
                                         val entry = Entry(
+                                            null,
                                             date = LocalDateTime.now(),
                                             food = selectedFood.value,
                                             userId = Firebase.auth.currentUser!!.uid,
@@ -258,7 +270,7 @@ object EntriesMenu: Menu() {
     }
 
     @Composable
-    private fun ItemCard(item: Food) {
+    private fun ItemCard(item: Entry) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -271,10 +283,10 @@ object EntriesMenu: Menu() {
                 modifier = Modifier.padding(15.dp)
             ) {
                 Text(
-                    item.displayName
+                    item.food.displayName
                 )
                 Text(
-                    item.calories.toString()
+                    item.food.calories.toString()
                 )
             }
         }
