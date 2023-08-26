@@ -9,4 +9,6 @@ import com.licenta.fitnessapp.data.Question
 object Cache: ViewModel() {
     var entries = mutableStateListOf<Entry>()
     var questions = mutableStateListOf<Question>()
+    var selectedQuestion: Question? = null
+    var commentsForQuestion = mutableStateListOf<Question>()
 }

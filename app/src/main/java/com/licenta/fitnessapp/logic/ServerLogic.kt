@@ -43,7 +43,7 @@ object ServerLogic {
                 "title" to question.title,
                 "content" to question.content,
                 "parent" to question.parentQuestion,
-                "tags" to question.tags,
+                "tags" to getTags(question.tags),
                 "user" to question.userEmail
             )).addOnSuccessListener { documentReference ->
                 Log.d("Food save", "DocumentSnapshot added with ID: ${documentReference.id}")
@@ -51,6 +51,15 @@ object ServerLogic {
             .addOnFailureListener { e ->
                 Log.w("Food save", "Error adding document", e)
             }
+    }
+
+    private fun getTags(tags: List<QuestionTags>): String? {
+        var tagString = ""
+        for (tag in tags) {
+            tagString += "$tag"
+            if (tags.indexOf(tag) != tags.size - 1) tagString += ","
+        }
+        return tagString
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -83,9 +92,10 @@ object ServerLogic {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun getFirst5Questions() {
+    fun getFirst10Questions() {
         Firebase.firestore.collection("questions")
-            .orderBy("date", Query.Direction.DESCENDING)
+            .whereEqualTo("parent", "")
+            .limit(10)
             .get()
             .addOnSuccessListener {
                 Cache.questions.clear()
@@ -99,7 +109,7 @@ object ServerLogic {
                         title = document.data["title"].toString(),
                         content = document.data["content"].toString(),
                         parentQuestion = document.data["parent"].toString(),
-                        tags = parseTags(arrayOf(document.data["tags"])),
+                        tags = getTags(document.data["tags"].toString()),
                         userEmail = document.data["user"].toString()
                         )
                     )
@@ -107,11 +117,54 @@ object ServerLogic {
             }
     }
 
-    private fun parseTags(arrayOf: Array<Any?>): List<QuestionTags> {
-        for(it in arrayOf) {
-            val da = it.toString()
+    private fun getTags(tagString: String): List<QuestionTags> {
+        val tagsList = mutableListOf<QuestionTags>()
+        val tagsAsString = tagString.split(",")
+        for(tagAsString in tagsAsString) {
+            tagsList.add(QuestionTags.valueOf(tagAsString))
         }
+        return tagsList
+    }
 
-        return listOf()
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getCommentsForQuestion(id: String?) {
+        Firebase.firestore.collection("questions")
+            .whereEqualTo("parent", id)
+            .get()
+            .addOnSuccessListener {
+                Cache.commentsForQuestion.clear()
+
+                for (document in it) {
+                    Log.w("Food save", "DocumentSnapshot added with ID: ${document.id}")
+                    Cache.commentsForQuestion.add(
+                        Question(
+                            id = document.id,
+                            date = LocalDateTime.parse(document.data["date"].toString()),
+                            title = document.data["title"].toString(),
+                            content = document.data["content"].toString(),
+                            parentQuestion = document.data["parent"].toString(),
+                            tags = getTags(document.data["tags"].toString()),
+                            userEmail = document.data["user"].toString()
+                        )
+                    )
+                }
+            }
+    }
+
+    fun addComment(question: Question) {
+        Firebase.firestore.collection("questions")
+            .add(hashMapOf(
+                "date" to question.date.toString(),
+                "title" to question.title,
+                "content" to question.content,
+                "parent" to question.parentQuestion,
+                "tags" to getTags(question.tags),
+                "user" to question.userEmail
+            )).addOnSuccessListener { documentReference ->
+                Log.d("Food save", "DocumentSnapshot added with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                Log.w("Food save", "Error adding document", e)
+            }
     }
 }

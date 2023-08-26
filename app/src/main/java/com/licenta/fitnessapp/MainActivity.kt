@@ -6,20 +6,18 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.licenta.fitnessapp.data.Composables
-import com.licenta.fitnessapp.data.Entry
-import com.licenta.fitnessapp.logic.Cache
 import com.licenta.fitnessapp.ui.composables.AccountMenu
 import com.licenta.fitnessapp.ui.composables.Login
 import com.licenta.fitnessapp.ui.composables.EntriesMenu
 import com.licenta.fitnessapp.ui.composables.QuestionsMenu
 import com.licenta.fitnessapp.ui.composables.Register
+import com.licenta.fitnessapp.ui.composables.SelectedQuestion
 import com.licenta.fitnessapp.ui.composables.StepCounterMenu
 import com.licenta.fitnessapp.ui.theme.FitnessAppTheme
 
@@ -47,6 +45,7 @@ class MainActivity : ComponentActivity() {
                         Composables.QUESTIONS.index -> QuestionsMenu.Ui(composable)
                         Composables.STEPCOUNTER.index -> StepCounterMenu.Ui(composable)
                         Composables.ACCOUNT.index -> AccountMenu.Ui(composable)
+                        Composables.SELECTEDQUESTION.index -> SelectedQuestion.Ui(composable)
                     }
                 }
             }
