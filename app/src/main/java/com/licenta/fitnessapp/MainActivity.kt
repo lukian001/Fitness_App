@@ -1,5 +1,6 @@
 package com.licenta.fitnessapp
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,6 +10,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.licenta.fitnessapp.data.Composables
@@ -20,10 +23,12 @@ import com.licenta.fitnessapp.ui.composables.Register
 import com.licenta.fitnessapp.ui.composables.SelectedQuestion
 import com.licenta.fitnessapp.ui.composables.StepCounterMenu
 import com.licenta.fitnessapp.ui.theme.FitnessAppTheme
+import java.security.Permission
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         setContent {
             FitnessAppTheme {

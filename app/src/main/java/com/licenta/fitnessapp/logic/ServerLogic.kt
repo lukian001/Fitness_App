@@ -8,6 +8,8 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.licenta.fitnessapp.data.Entry
+import com.licenta.fitnessapp.data.Exercises
+import com.licenta.fitnessapp.data.Food
 import com.licenta.fitnessapp.data.Question
 import com.licenta.fitnessapp.data.QuestionTags
 import com.licenta.fitnessapp.data.stringToFood
@@ -25,11 +27,14 @@ object ServerLogic {
         Firebase.firestore.collection(entry.userId + "food")
             .add(hashMapOf(
                 "date" to entry.date.toString(),
-                "food" to entry.food.displayName,
+                "food" to entry.food,
+                "exercise" to entry.exercise,
+                "caloriesBurned" to entry.caloriesBurned,
                 "portion" to entry.portion,
                 "qty" to entry.grams
             )).addOnSuccessListener { documentReference ->
                 Log.d("Food save", "DocumentSnapshot added with ID: ${documentReference.id}")
+                Cache.entries.add(0, entry)
             }
             .addOnFailureListener { e ->
                 Log.w("Food save", "Error adding document", e)
@@ -82,7 +87,9 @@ object ServerLogic {
                     Cache.entries.add(Entry(
                         document.id,
                         LocalDateTime.parse(document.data["date"].toString()),
-                        stringToFood(document.data["food"].toString()),
+                        getFood(document.data["food"].toString()),
+                        getExersise(document.data["exercise"].toString()),
+                        document.data["caloriesBurned"].toString().toFloat(),
                         Firebase.auth.currentUser!!.uid,
                         document.data["portion"].toString().toFloat(),
                         document.data["qty"].toString().toFloat()
@@ -115,6 +122,14 @@ object ServerLogic {
                     )
                 }
             }
+    }
+
+    private fun getFood(foodString: String): Food {
+        return Food.valueOf(foodString)
+    }
+
+    private fun getExersise(exercises: String): Exercises {
+        return Exercises.valueOf(exercises)
     }
 
     private fun getTags(tagString: String): List<QuestionTags> {
@@ -162,6 +177,7 @@ object ServerLogic {
                 "user" to question.userEmail
             )).addOnSuccessListener { documentReference ->
                 Log.d("Food save", "DocumentSnapshot added with ID: ${documentReference.id}")
+                Cache.commentsForQuestion.add(0, question)
             }
             .addOnFailureListener { e ->
                 Log.w("Food save", "Error adding document", e)
