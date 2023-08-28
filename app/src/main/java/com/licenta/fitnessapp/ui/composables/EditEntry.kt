@@ -1,14 +1,127 @@
 package com.licenta.fitnessapp.ui.composables
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.licenta.fitnessapp.data.Composables
 import com.licenta.fitnessapp.logic.Cache
 
-class EditEntry(val readOnly: Boolean): Menu() {
+object EditEntry: Menu() {
+    lateinit var readOnly: MutableState<Boolean>
+
     @Composable
     override fun CustomUi() {
-        TODO("Not yet implemented")
+        readOnly = remember {
+            mutableStateOf(true)
+        }
+
+        val portionValue = remember {
+            mutableStateOf(Cache.selectedEntry!!.portion)
+        }
+
+        val quantityValue = remember {
+            mutableStateOf(Cache.selectedEntry!!.grams)
+        }
+
+        val caloriesBurned = remember {
+            mutableStateOf(Cache.selectedEntry!!.caloriesBurned)
+        }
+
+        Column (
+            Modifier.fillMaxSize()
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Entry ID: ${Cache.selectedEntry!!.id}",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(Modifier.height(20.dp))
+
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                value = portionValue.value.toString(),
+                onValueChange = {
+                    portionValue.value = it.replace("-", "").toFloat()
+                    quantityValue.value = portionValue.value * 100
+                },
+                label = {
+                    Text(text = "Portion")
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                ),
+                readOnly = readOnly.value
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                value = quantityValue.value.toString(),
+                onValueChange = {
+                    quantityValue.value = it.replace("-", "").toFloat()
+                    portionValue.value = quantityValue.value / 100
+                },
+                label = {
+                    Text(text = "Quantity in grams")
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                ),
+                readOnly = readOnly.value
+            )
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth().padding(5.dp),
+                value = caloriesBurned.value.toString(),
+                onValueChange = {
+                    caloriesBurned.value = it.replace("-", "").toFloat()
+                },
+                label = {
+                    Text(text = "Reps")
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                ),
+                readOnly = readOnly.value
+            )
+
+            Spacer(Modifier.weight(1f))
+
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                onClick = {
+                    readOnly.value = !readOnly.value
+                }
+            ) {
+                if (readOnly.value) {
+                    Text("Edit")
+                } else {
+                    Text("Save changes")
+                }
+
+            }
+        }
     }
 
     @Composable

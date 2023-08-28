@@ -54,6 +54,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.licenta.fitnessapp.data.Composables
 import com.licenta.fitnessapp.data.Entry
 import com.licenta.fitnessapp.data.Exercises
 import com.licenta.fitnessapp.logic.Cache
@@ -109,6 +110,7 @@ object EntriesMenu: Menu() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun AddEntry() {
@@ -206,7 +208,7 @@ object EntriesMenu: Menu() {
             modifier = Modifier.fillMaxWidth(),
             value = caloriesBurned.value.toString(),
             onValueChange = {
-                caloriesBurned.value = it.toFloat()
+                caloriesBurned.value = it.replace("-", "").toFloat()
             },
             label = {
                 Text(text = "Reps")
@@ -400,6 +402,7 @@ object EntriesMenu: Menu() {
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun ItemCard(item: Entry) {
         Card(
@@ -408,7 +411,11 @@ object EntriesMenu: Menu() {
                 .padding(bottom = 5.dp, start = 5.dp, end = 5.dp),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 5.dp
-            )
+            ),
+            onClick = {
+                Cache.selectedEntry = item
+                composable.value = Composables.EDITENTRY.index
+            }
         ) {
             Column(
                 modifier = Modifier.padding(15.dp)

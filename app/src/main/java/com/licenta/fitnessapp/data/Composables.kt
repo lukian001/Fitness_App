@@ -9,5 +9,6 @@ enum class Composables (
     QUESTIONS(3),
     STEPCOUNTER(4),
     ACCOUNT(5),
-    SELECTEDQUESTION(6);
+    SELECTEDQUESTION(6),
+    EDITENTRY(7);
 }

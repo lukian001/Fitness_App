@@ -16,6 +16,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.licenta.fitnessapp.data.Composables
 import com.licenta.fitnessapp.ui.composables.AccountMenu
+import com.licenta.fitnessapp.ui.composables.EditEntry
 import com.licenta.fitnessapp.ui.composables.Login
 import com.licenta.fitnessapp.ui.composables.EntriesMenu
 import com.licenta.fitnessapp.ui.composables.QuestionsMenu
@@ -51,6 +52,7 @@ class MainActivity : ComponentActivity() {
                         Composables.STEPCOUNTER.index -> StepCounterMenu.Ui(composable)
                         Composables.ACCOUNT.index -> AccountMenu.Ui(composable)
                         Composables.SELECTEDQUESTION.index -> SelectedQuestion.Ui(composable)
+                        Composables.EDITENTRY.index -> EditEntry.Ui(composable)
                     }
                 }
             }
