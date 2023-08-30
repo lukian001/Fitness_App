@@ -202,7 +202,10 @@ object EntriesMenu: Menu() {
         selectedExercises: MutableState<Exercises>,
         caloriesBurned: MutableState<Float>
     ) {
-        ExerciseDropdownMenu(selectedExercises)
+        ExerciseDropdownMenu(
+            Modifier,
+            selectedExercises
+        )
 
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -233,7 +236,10 @@ object EntriesMenu: Menu() {
         portionValue: MutableState<Float>,
         quantityValue: MutableState<Float>
     ) {
-        FoodDropdownMenu(selectedFood)
+        FoodDropdownMenu(
+            Modifier,
+            selectedFood
+        )
 
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -300,12 +306,15 @@ object EntriesMenu: Menu() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun FoodDropdownMenu(selectedFood: MutableState<Food>) {
+    fun FoodDropdownMenu(
+        modifier: Modifier,
+        selectedFood: MutableState<Food>) {
         var isExpanded by remember {
             mutableStateOf(false)
         }
 
         ExposedDropdownMenuBox(
+            modifier = modifier,
             expanded = isExpanded,
             onExpandedChange = {
                 isExpanded = it
@@ -352,7 +361,10 @@ object EntriesMenu: Menu() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun ExerciseDropdownMenu(selectedExercises: MutableState<Exercises>) {
+    fun ExerciseDropdownMenu(
+        modifier: Modifier,
+        selectedExercises: MutableState<Exercises>
+    ) {
         var isExpanded by remember {
             mutableStateOf(false)
         }
@@ -361,7 +373,8 @@ object EntriesMenu: Menu() {
             expanded = isExpanded,
             onExpandedChange = {
                 isExpanded = it
-            }
+            },
+            modifier = modifier,
         ) {
             OutlinedTextField(
                 value = selectedExercises.value.displayName,

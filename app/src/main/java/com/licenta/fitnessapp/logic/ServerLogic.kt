@@ -40,7 +40,6 @@ object ServerLogic {
                 Log.w("Food save", "Error adding document", e)
             }
     }
-
     fun addQuestionEntry(question: Question) {
         Firebase.firestore.collection("questions")
             .add(hashMapOf(
@@ -57,7 +56,6 @@ object ServerLogic {
                 Log.w("Food save", "Error adding document", e)
             }
     }
-
     private fun getTags(tags: List<QuestionTags>): String? {
         var tagString = ""
         for (tag in tags) {
@@ -66,7 +64,6 @@ object ServerLogic {
         }
         return tagString
     }
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun getEntriesForDate(selectedDay: LocalDateTime) {
         val nextDay = selectedDay.toKotlinLocalDateTime()
@@ -97,7 +94,6 @@ object ServerLogic {
                 }
              }
     }
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun getFirst10Questions() {
         Firebase.firestore.collection("questions")
@@ -123,15 +119,12 @@ object ServerLogic {
                 }
             }
     }
-
     private fun getFood(foodString: String): Food {
         return Food.valueOf(foodString)
     }
-
     private fun getExersise(exercises: String): Exercises {
         return Exercises.valueOf(exercises)
     }
-
     private fun getTags(tagString: String): List<QuestionTags> {
         val tagsList = mutableListOf<QuestionTags>()
         val tagsAsString = tagString.split(",")
@@ -140,7 +133,6 @@ object ServerLogic {
         }
         return tagsList
     }
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun getCommentsForQuestion(id: String?) {
         Firebase.firestore.collection("questions")
@@ -165,7 +157,6 @@ object ServerLogic {
                 }
             }
     }
-
     fun addComment(question: Question) {
         Firebase.firestore.collection("questions")
             .add(hashMapOf(
@@ -182,5 +173,11 @@ object ServerLogic {
             .addOnFailureListener { e ->
                 Log.w("Food save", "Error adding document", e)
             }
+    }
+
+    fun deleteEntry(selectedEntry: Entry) {
+        Firebase.firestore.collection(Firebase.auth.currentUser!!.uid + "food")
+            .document(selectedEntry.id!!)
+            .delete()
     }
 }
