@@ -12,6 +12,7 @@ import com.licenta.fitnessapp.data.Exercises
 import com.licenta.fitnessapp.data.Food
 import com.licenta.fitnessapp.data.Question
 import com.licenta.fitnessapp.data.QuestionTags
+import com.licenta.fitnessapp.data.Step
 import com.licenta.fitnessapp.data.stringToFood
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
@@ -94,6 +95,52 @@ object ServerLogic {
                 }
              }
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getSteps() {
+        Firebase.firestore.collection(Firebase.auth.currentUser!!.uid + "step")
+            .orderBy("date", Query.Direction.DESCENDING).get()
+            .addOnSuccessListener {
+                Cache.stepsHistory.clear()
+
+                for (document in it) {
+                    Log.w("Food save", "DocumentSnapshot added with ID: ${document.id}")
+                    Cache.stepsHistory.add(
+                        Step(
+                            document.id,
+                            LocalDateTime.parse(document.data["date"].toString()),
+                            document.data["walkedSteps"].toString().toInt()
+                        )
+                    )
+                }
+            }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getQuestionsForUser(email: String) {
+        Firebase.firestore.collection("questions")
+            .whereEqualTo("user", email)
+            .get()
+            .addOnSuccessListener {
+                Cache.questions.clear()
+
+                for (document in it) {
+                    Log.w("Food save", "DocumentSnapshot added with ID: ${document.id}")
+                    Cache.questions.add(
+                        Question(
+                            id = document.id,
+                            date = LocalDateTime.parse(document.data["date"].toString()),
+                            title = document.data["title"].toString(),
+                            content = document.data["content"].toString(),
+                            parentQuestion = document.data["parent"].toString(),
+                            tags = getTags(document.data["tags"].toString()),
+                            userEmail = document.data["user"].toString()
+                        )
+                    )
+                }
+            }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun getFirst10Questions() {
         Firebase.firestore.collection("questions")
