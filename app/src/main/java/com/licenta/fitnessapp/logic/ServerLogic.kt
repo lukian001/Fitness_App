@@ -221,10 +221,34 @@ object ServerLogic {
                 Log.w("Food save", "Error adding document", e)
             }
     }
-
     fun deleteEntry(selectedEntry: Entry) {
         Firebase.firestore.collection(Firebase.auth.currentUser!!.uid + "food")
             .document(selectedEntry.id!!)
             .delete()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getEntriesForDates(timeForDb: String, timeForDb1: String) {
+        Firebase.firestore.collection(Firebase.auth.currentUser!!.uid + "food")
+            .whereGreaterThanOrEqualTo("date", timeForDb)
+            .whereLessThan("date", timeForDb1)
+            .orderBy("date", Query.Direction.DESCENDING).get()
+            .addOnSuccessListener {
+                Cache.entries.clear()
+
+                for (document in it) {
+                    Log.w("Food save", "DocumentSnapshot added with ID: ${document.id}")
+                    Cache.entries.add(Entry(
+                        document.id,
+                        LocalDateTime.parse(document.data["date"].toString()),
+                        getFood(document.data["food"].toString()),
+                        getExersise(document.data["exercise"].toString()),
+                        document.data["caloriesBurned"].toString().toFloat(),
+                        Firebase.auth.currentUser!!.uid,
+                        document.data["portion"].toString().toFloat(),
+                        document.data["qty"].toString().toFloat()
+                    ))
+                }
+            }
     }
 }

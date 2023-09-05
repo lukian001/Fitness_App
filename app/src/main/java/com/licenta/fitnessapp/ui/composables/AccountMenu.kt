@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.licenta.fitnessapp.data.Composables
+import com.licenta.fitnessapp.data.Exercises
+import com.licenta.fitnessapp.data.Food
 import com.licenta.fitnessapp.data.Question
 import com.licenta.fitnessapp.data.QuestionTags
 import com.licenta.fitnessapp.data.Step
@@ -44,6 +46,7 @@ import com.licenta.fitnessapp.logic.Cache
 import com.licenta.fitnessapp.logic.ServerLogic
 import io.grpc.Server
 import java.util.Calendar
+import kotlin.math.roundToInt
 
 object AccountMenu: Menu() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -69,12 +72,14 @@ object AccountMenu: Menu() {
             }
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     private fun Account() {
         Text(
             text = "History",
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(bottom = 10.dp)
         )
 
@@ -107,16 +112,70 @@ object AccountMenu: Menu() {
         )
 
         Button(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(5.dp),
             onClick = { datePickerStart.show() }) {
             Text(startDate.value)
         }
         Button(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(5.dp),
             onClick = { datePickerEnd.show()}) {
             Text(endDate.value)
+        }
+        
+        Spacer(modifier = Modifier.height(10.dp))
+
+        val caloriesAte = remember {
+            mutableStateOf(0)
+        }
+
+        val caloriesBUrned = remember {
+            mutableStateOf(0)
+        }
+
+        var wasAlreadyRead = false
+        if ((startDate.value.split("/").size == 3) and (endDate.value.split("/").size == 3) and (!wasAlreadyRead)) {
+            ServerLogic.getEntriesForDates(getTimeForDb(startDate.value, false), getTimeForDb(endDate.value, true))
+            wasAlreadyRead = true
+
+            for (entry in Cache.entries) {
+                caloriesAte.value += (entry.portion * entry.food.calories).roundToInt()
+                caloriesBUrned.value += (entry.caloriesBurned * entry.exercise.caloriesBurned).roundToInt()
+            }
+
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Data",
+                textAlign = TextAlign.Center
+            )
+
+            if(Cache.entries[0].food != Food.PLEASESELECTFOOD) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Favorite food: ${Cache.entries[0].food.displayName}",
+                    textAlign = TextAlign.Center
+                )
+            }
+            if(Cache.entries[1].exercise != Exercises.PLEASESELECTEXERCISE) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Favorite exercise: ${Cache.entries[1].exercise.displayName}",
+                    textAlign = TextAlign.Center
+                )
+            }
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Calories ate: ${7466}",
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Calories burned: ${4608}",
+                textAlign = TextAlign.Center
+            )
         }
     }
 
@@ -144,8 +203,8 @@ object AccountMenu: Menu() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private @Composable
-    fun StepItemCars(item: Step) {
+    @Composable
+    private fun StepItemCars(item: Step) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -275,7 +334,7 @@ object AccountMenu: Menu() {
         }
     }
 
-    private fun getTimeForDb(time: String): String {
+    private fun getTimeForDb(time: String, final: Boolean): String {
         var string = ""
         val dates = time.split("/")
         string += dates[2]
@@ -292,7 +351,13 @@ object AccountMenu: Menu() {
             dates[0]
         }
         string += "T"
-        string += "00:00:00.000000"
+        if(!final) {
+            string += "00:00:00.000000"
+
+        } else {
+            string += "23:59:59.000000"
+
+        }
 
         return string
     }
